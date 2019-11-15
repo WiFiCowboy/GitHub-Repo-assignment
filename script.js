@@ -5,25 +5,32 @@
 // You must display the repo name and link to the repo URL.
 // The user must be able to make multiple searches and see only the results for the current search.
 
-
-let testName = 'wificowboy';
 let userName = '';
 
 function getUserRepo(){
-    fetch('https://api.github.com/search/users?q=' + userName)
+    fetch('https://api.github.com/users/' + userName + '/repos?per_page=10')
     .then(response => response.json())
     .then(responseJson => displayResults(responseJson))
     .catch(error => alert('that didnt work!'));
 };
 
 function displayResults(responseJson){
-    console.log(responseJson);
+    resetResults();
+    for(let i = 0; i < responseJson.length; i++){
+        $('.results').append(
+            `<h2>Repo Name: ${responseJson[i].name}</h2>
+            <a href="${responseJson[i].html_url}">${responseJson[i].html_url}</a>`
+          )
+    }
+    $('.results').removeClass('hidden');
 };
 
+function resetResults(){
+    $('.results').empty();
+}
 
 function grabUserName(){
     userName = $('#UserInput').val();
-    console.log(userName);
 };
 
 function submitUser(){
@@ -36,10 +43,7 @@ function submitUser(){
 };
 
 function masterControl(){
-    console.log('Script is online!');
     submitUser();
-  
-
 };
 
 $(masterControl);
