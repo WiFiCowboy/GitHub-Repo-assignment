@@ -1,17 +1,17 @@
-
-// The user must be able to search for a GitHub user handle.
-// The search must trigger a call to GitHub's API.
-// The repos associated with that handle must be displayed on the page.
-// You must display the repo name and link to the repo URL.
-// The user must be able to make multiple searches and see only the results for the current search.
-
 let userName = '';
 
 function getUserRepo(){
     fetch('https://api.github.com/users/' + userName + '/repos?per_page=10')
-    .then(response => response.json())
+    .then(response => {
+        if(response.ok){
+            return response.json();
+        }else{
+            // skips next .then and goes to .catch
+            throw new Error();
+        }
+    })
     .then(responseJson => displayResults(responseJson))
-    .catch(error => alert('that didnt work!'));
+    .catch(error => errorHandle());
 };
 
 function displayResults(responseJson){
@@ -27,7 +27,7 @@ function displayResults(responseJson){
 
 function resetResults(){
     $('.results').empty();
-}
+};
 
 function grabUserName(){
     userName = $('#UserInput').val();
@@ -38,8 +38,13 @@ function submitUser(){
         event.preventDefault();
         grabUserName();
         getUserRepo();
-
     });
+};
+
+function errorHandle() {
+    resetResults();
+    $('.results').append(`<h3>User Not Found!</h3>`);
+    $('.results').removeClass('hidden');
 };
 
 function masterControl(){
